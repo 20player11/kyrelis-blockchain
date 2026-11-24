@@ -5,7 +5,7 @@
     "build": "node fix-bech32.cjs && vite build"
   },
   "dependencies": {
-    "@cosmjs/stargate": "0.38.1",
+    "@cosmjs/stargate": "0.39.0",
     "@cosmjs/encoding": "0.38.1"
   },
   "devDependencies": {
