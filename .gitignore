@@ -1,0 +1,12 @@
+/.local/
+/bin/
+node_modules/
+dist/
+.venv/
+__pycache__/
+*.sqlite3
+.env
+*.log
+priv_validator_key.json
+node_key.json
+keyring-test/

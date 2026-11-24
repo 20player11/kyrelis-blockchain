@@ -1,0 +1,14 @@
+{
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node fix-bech32.cjs && vite build"
+  },
+  "dependencies": {
+    "@cosmjs/stargate": "0.38.1",
+    "@cosmjs/encoding": "0.38.1"
+  },
+  "devDependencies": {
+    "vite": "^7.3.1"
+  }
+}

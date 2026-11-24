@@ -1,0 +1,33 @@
+# KYRELIS real Cosmos SDK scaffold config / development only.
+# Ignite CLI v30 — inspect generated genesis before running.
+version: 1
+validation: sovereign
+default_denom: ukyrl
+accounts:
+  - name: alice
+    coins: ["1000000000ukyrl"]
+  - name: treasury
+    coins: ["20999000000000ukyrl"]
+validators:
+  - name: alice
+    bonded: "100000000ukyrl"
+    config:
+      moniker: kyrelis-validator-1
+      consensus:
+        timeout_commit: "5s"
+    app:
+      minimum-gas-prices: "0.0005ukyrl"
+      api:
+        enable: true
+        address: "tcp://127.0.0.1:1317"
+genesis:
+  chain_id: kyrelis-devnet-1
+  app_state:
+    staking:
+      params:
+        bond_denom: ukyrl
+    gov:
+      params:
+        min_deposit:
+          - denom: ukyrl
+            amount: "1000000"
