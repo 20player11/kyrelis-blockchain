@@ -23,6 +23,12 @@ async function connect(){
  const response=await fetch('/rest/cosmos/staking/v1beta1/validators?status=BOND_STATUS_BONDED&pagination.limit=200');if(!response.ok)throw Error('Peněženka připojena. Seznam validátorů se nepodařilo načíst.');
  const data=await response.json();$('validators').replaceChildren(...data.validators.map(v=>new Option(v.description.moniker,v.operator_address)));
 }
+const sendFee=700n;
+function decimal(n){return (n/1000000n)+'.'+(n%1000000n).toString().padStart(6,'0')}
+async function spendable(){const r=await fetch('/rest/cosmos/bank/v1beta1/spendable_balances/'+addr+'/by_denom?denom=ukyrl',{cache:'no-store'});if(!r.ok)throw Error('Disponibilní zůstatek se nepodařilo ověřit.');return BigInt((await r.json()).balance.amount)}
+$('maxAmount').onclick=async()=>{try{const n=await spendable();if(n<=sendFee)throw Error('Zůstatek nepokryje poplatek.');$('amount').value=decimal(n-sendFee)}catch(e){$('status').textContent=e.message}};
+$('scanAddress').onclick=()=>{if(!window.BarcodeDetector){$('status').textContent='Tento prohlížeč nepodporuje čtení QR z obrázku. Vlož adresu ručně.';return}$('qrFile').click()};
+$('qrFile').onchange=async e=>{let image;try{const file=e.target.files[0];if(!file)return;image=await createImageBitmap(file);const codes=await new BarcodeDetector({formats:['qr_code']}).detect(image);let to=codes[0]?.rawValue?.trim(),amount;if(to?.startsWith("kyrelis:")){const u=new URL(to);if(u.searchParams.get("chain")!==chain)throw Error();to=u.pathname;amount=u.searchParams.get("amount");if(!/^\d{1,8}(\.\d{1,6})?$/.test(amount))throw Error();}const k=fromBech32(to);if(k.prefix!=='kyr'||k.data.length!==20)throw Error();$('recipient').value=to;if(amount)$('amount').value=amount}catch{$('status').textContent='QR musí obsahovat platnou adresu kyr1.'}finally{image?.close();e.target.value=''}};
 async function tx(action){
  const v=$('validators').value;let typeUrl,value;
  if(action==='send'){const to=$('recipient').value.trim();const parsed=fromBech32(to);if(parsed.prefix!=='kyr'||parsed.data.length!==20)throw Error('Neplatná adresa příjemce.');typeUrl='/cosmos.bank.v1beta1.MsgSend';value={fromAddress:addr,toAddress:to,amount:[{denom,amount:units('amount')}]};}
@@ -44,11 +50,14 @@ async function tx(action){
    if(typeof value!=='string'||!/^\d+$/.test(value)||BigInt(value)>18446744073709551615n)throw Error('Neplatné číslo účtu nebo pořadí transakce.');
    return BigInt(value);
  };
+ if(action==='send'){const n=BigInt(value.amount[0].amount);const total=n+sendFee;if(await spendable()<total)throw Error('Disponibilní zůstatek nepokryje částku a poplatek.');if(!window.confirm(['Příjemce: '+value.toAddress,'Převod: '+decimal(n)+' KYRL','Navržený poplatek: '+decimal(sendFee)+' KYRL','Celkem: '+decimal(total)+' KYRL'].join('\n')))return}
+ $('status').textContent='Čekám na podpis v Keplru…';
  const signed=await client.sign(addr,[msg],fee,'',{chainId:chain,accountNumber:uint64(account.account_number),sequence:uint64(account.sequence)});
  const bytes=TxRaw.encode(signed).finish();
  const digest=await crypto.subtle.digest('SHA-256',bytes);
  const hash=Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,'0')).join('').toUpperCase();
  sessionStorage.setItem(pendingKey,hash);
+ $('status').textContent='Čekám na potvrzení v bloku · '+hash;
  let r;
  try {r=await client.broadcastTx(bytes);}
  catch(error){

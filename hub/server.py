@@ -62,7 +62,26 @@ def login(r):
 @require_POST
 def logout(r):
     r.session.flush();return JsonResponse({"csrf":get_token(r)})
-urlpatterns=[path("api/"+n,f) for n,f in [("session",session),("challenge",challenge),("login",login),("logout",logout)]]
+def payment_qr(request):
+    from bech32 import bech32_decode
+    from django.http import HttpResponse
+    from io import BytesIO
+    import re
+    import qrcode
+    from qrcode.image.svg import SvgPathImage
+    from urllib.parse import urlencode
+    address = request.GET.get("address", "")
+    amount = request.GET.get("amount", "")
+    prefix, words = bech32_decode(address)
+    if prefix != "kyr" or len(address) != 42 or not words:
+        return JsonResponse({"error":"Invalid address"},status=400)
+    if amount and (not re.fullmatch(r"[0-9]{1,8}(\.[0-9]{1,6})?",amount) or not int(amount.replace(".",""))):
+        return JsonResponse({"error":"Invalid amount"},status=400)
+    payload = address if not amount else "kyrelis:" + address + "?" + urlencode({"chain":CHAIN,"amount":amount})
+    out = BytesIO()
+    qrcode.make(payload,image_factory=SvgPathImage).save(out)
+    return HttpResponse(out.getvalue(),content_type="image/svg+xml")
+urlpatterns=[path("api/payment-qr", payment_qr)]+[path("api/"+n,f) for n,f in [("session",session),("challenge",challenge),("login",login),("logout",logout)]]
 application=get_wsgi_application()
 if __name__=="__main__":
     from django.core.management import call_command
