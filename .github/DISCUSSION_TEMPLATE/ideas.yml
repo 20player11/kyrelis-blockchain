@@ -1,0 +1,23 @@
+title: "[Idea] "
+labels: ["ideas"]
+body:
+  - type: markdown
+    attributes:
+      value: "Discuss a concept before opening a feature request or pull request. Avoid disclosing security vulnerabilities here."
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: "Which KYRELIS user or developer problem does this solve?"
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Idea and alternatives
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Security, migration or compatibility considerations

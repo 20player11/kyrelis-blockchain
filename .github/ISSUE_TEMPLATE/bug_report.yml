@@ -1,0 +1,71 @@
+name: "Bug report"
+description: "Report a reproducible KYRELIS defect (chain, Hub, operator, or tooling)."
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve KYRELIS. **Never post seed phrases, private keys, access tokens, unredacted configuration, or real funds.** For vulnerabilities, see [SECURITY.md](../../SECURITY.md) instead of opening a public issue.
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      options: ["Blockchain / kyrelisd", "Keplr / wallet integration", "Hub / web UI", "Operator console", "Install / launch scripts", "Documentation", "Other"]
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: "Describe the problem and actual result."
+      placeholder: "Keplr shows KYRL but signing or broadcasting a transfer fails..."
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: "Use disposable devnet accounts and redact sensitive details."
+      placeholder: |
+        1. Start the local node with ...
+        2. Open ...
+        3. Attempt ...
+        4. Observe ...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version / commit
+      placeholder: "Commit SHA, release tag, or branch"
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options: ["Windows 11", "Linux", "macOS", "Raspberry Pi / ARM64 Linux", "Other"]
+  - type: textarea
+    id: network
+    attributes:
+      label: Network and environment
+      description: "Chain ID, local/testnet (not secrets), relevant runtime versions; do not expose private infrastructure."
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs / screenshots (redacted)
+      render: shell
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checks
+      options:
+        - label: "I checked existing issues and documentation."
+          required: true
+        - label: "I removed keys, credentials and other sensitive information."
+          required: true

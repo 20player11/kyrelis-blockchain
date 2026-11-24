@@ -1,0 +1,56 @@
+name: Quality checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python-syntax:
+    name: Python syntax
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Compile Python files
+        run: python -m py_compile scripts/devnet.py scripts/hub.py hub/server.py
+  operator:
+    name: Operator Go tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: operator/go.mod
+          cache-dependency-path: operator/go.mod
+      - name: Run operator tests
+        working-directory: operator
+        run: go test ./...
+  hub-build:
+    name: Hub frontend build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: hub/web/package-lock.json
+      - name: Install dependencies
+        working-directory: hub/web
+        run: npm ci
+      - name: Build Vite frontend
+        working-directory: hub/web
+        run: npm run build
+  # Full Cosmos SDK chain testing intentionally stays manual until the
+  # Go 1.26.5 toolchain and runner resource requirements are verified.
