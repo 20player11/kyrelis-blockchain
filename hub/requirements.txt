@@ -3,3 +3,4 @@ cryptography>=45
 bech32==1.2.0
 gunicorn>=23; platform_system != "Windows"
 waitress>=3,<4
+qrcode>=8,<9
