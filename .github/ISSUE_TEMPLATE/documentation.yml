@@ -1,0 +1,27 @@
+name: "Documentation improvement"
+description: "Report inaccurate instructions or suggest clearer documentation."
+title: "[Docs]: "
+labels: ["documentation"]
+body:
+  - type: input
+    id: location
+    attributes:
+      label: Page or file
+      placeholder: "README.md, scripts/devnet.py instructions, etc."
+    validations:
+      required: true
+  - type: textarea
+    id: issue
+    attributes:
+      label: What's incorrect or missing?
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested correction
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment (if relevant)
+      placeholder: "Windows/Linux, Go/Node/Python versions"

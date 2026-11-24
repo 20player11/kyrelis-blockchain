@@ -1,0 +1,44 @@
+name: "Feature request"
+description: "Suggest an improvement for KYRELIS."
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: "Describe the user need first. Changes to consensus, fees, supply, key handling or the public network need a migration and security analysis."
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options: ["Blockchain / protocol", "Keplr / wallets", "Hub", "Operator console", "Developer experience", "Documentation", "Other"]
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / use case
+      description: "What is difficult today? Who benefits?"
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives and trade-offs
+  - type: textarea
+    id: compatibility
+    attributes:
+      label: Compatibility, security and migration impact
+      description: "Include impact on existing chain data, accounts, signing, fees and APIs when applicable."
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: "I searched for an existing proposal."
+          required: true

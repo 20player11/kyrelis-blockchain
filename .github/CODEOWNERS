@@ -1,0 +1,16 @@
+# Default project maintainer / reviewer
+* @20player11
+
+# High-risk chain and protocol changes
+/chain/ @20player11
+/scripts/ @20player11
+
+# Wallet, Hub and operator security boundaries
+/hub/ @20player11
+/operator/ @20player11
+
+# Project governance and automation
+/.github/ @20player11
+/SECURITY.md @20player11
+/CONTRIBUTING.md @20player11
+/COLLABORATION.md @20player11

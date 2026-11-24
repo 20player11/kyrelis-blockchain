@@ -1,0 +1,21 @@
+title: "[Question] "
+labels: ["question"]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Your question
+    validations:
+      required: true
+  - type: textarea
+    id: tried
+    attributes:
+      label: What have you tried?
+      description: "Include platform, version and sanitized command output."
+  - type: checkboxes
+    id: safe
+    attributes:
+      label: Safety
+      options:
+        - label: "I removed secrets and private keys from this post."
+          required: true
