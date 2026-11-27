@@ -1,0 +1,11 @@
+{
+  "network": "mainnet",
+  "chain_id": "kyrelis-2",
+  "hub": "https://blockchain.tail3fb8f3.ts.net:8443/",
+  "rpc": "https://blockchain.tail3fb8f3.ts.net:8443/rpc",
+  "rest": "https://blockchain.tail3fb8f3.ts.net:8443/rest",
+  "account_prefix": "kyr",
+  "display_denom": "KYRL",
+  "base_denom": "ukyrl",
+  "decimals": 6
+}

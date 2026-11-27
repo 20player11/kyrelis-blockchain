@@ -17,13 +17,13 @@ Thank you for contributing to **KYRELIS**, a student-built Cosmos SDK blockchain
 | `chain/` | Cosmos SDK / CometBFT chain, application logic, CLI and tests |
 | `hub/` | Django service and Vite/Keplr web wallet |
 | `operator/` | Go-based operator interface and RPC integration |
-| `scripts/` | Local network bootstrap and Hub launch tools |
-| `START*.cmd`, `start*.sh` | Windows and Unix launchers |
+| `scripts/` | Isolated development fixtures |
+| `START*.cmd`, `start*.sh` | Open the official mainnet Hub; local test launchers live in tools/development/ |
 | `media/` | Project imagery |
 
 ## Development environment
 
-The README is the source of truth for prerequisites and startup. The chain currently specifies Go **1.26.5**, the operator specifies Go **1.23**, and the web Hub requires Node.js **22.12+**; the local runner also requires Python **3.10+**. Different modules intentionally have separate requirements.
+See [the release guide](docs/releases.md) for source verification and local development. The chain currently specifies Go **1.26.5**, the operator specifies Go **1.23**, and the web Hub requires Node.js **22.12+**; the local runner also requires Python **3.10+**. Different modules intentionally have separate requirements.
 
 ### Fast checks
 
