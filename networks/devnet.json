@@ -1,0 +1,11 @@
+{
+  "network": "devnet",
+  "chain_id": "kyrelis-devnet-3",
+  "hub": "https://blockchain.tail3fb8f3.ts.net/",
+  "rpc": "https://blockchain.tail3fb8f3.ts.net/rpc",
+  "rest": "https://blockchain.tail3fb8f3.ts.net/rest",
+  "account_prefix": "kyr",
+  "display_denom": "KYRL",
+  "base_denom": "ukyrl",
+  "decimals": 6
+}
