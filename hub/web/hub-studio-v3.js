@@ -24,10 +24,13 @@ function button(label,act){const b=document.createElement('button');b.type='butt
 function label(a){return accounts[a]||a.slice(0,9)+'…'+a.slice(-6)}
 function valid(a){const chars='qpzry9x8gf2tvdw0s3jn54khce6mua7l';if(!/^kyr1[0-9a-z]{38}$/.test(a))return false;const values=[3,3,3,0,11,25,18,...Array.from(a.slice(4),c=>chars.indexOf(c))];let sum=1;for(const n of values){if(n<0)return false;const top=sum>>>25;sum=((sum&33554431)<<5)^n;[0x3b6a57b2,0x26508e6d,0x1ea119fa,0x3d4233dd,0x2a1462b3].forEach((g,j)=>{if(top>>j&1)sum^=g})}return sum===1}
 function render(){let h=document.getElementById('accountHistory');if(!h){h=document.createElement('a');h.id='accountHistory';h.textContent='Historie účtu';document.getElementById('quick').append(h)}h.href='/explorer.html?q='+encodeURIComponent(profile||live());const addresses=[...new Set([live(),...Object.keys(accounts)])].filter(Boolean);$('profile').replaceChildren(...addresses.map(a=>new Option(label(a)+(a===live()?' · připojeno':''),a)));$('profile').value=profile;
-$('contacts').replaceChildren(...Object.entries(accounts).map(([a,name])=>{const row=document.createElement('div');row.className='contact';const title=document.createElement('strong');title.textContent=name;const addr=document.createElement('code');addr.textContent=a;row.append(title,addr,button('Použít pro převod',()=>{profile=live();tab='home';render();$('recipient').value=a;$('amount').focus()}),button('Odebrat',()=>{delete accounts[a];save('accounts',accounts);if(profile===a)profile=live();render()}));return row}));
+$('contacts').replaceChildren(...Object.entries(accounts).map(([a,name])=>{const row=document.createElement('div');row.className='contact';const title=document.createElement('strong');title.textContent=name;const addr=document.createElement('code');addr.textContent=a;row.append(title,addr,button('Použít pro převod',()=>{profile=live();tab='send';render();$('recipient').value=a;$('amount').focus()}),button('Odebrat',()=>{delete accounts[a];save('accounts',accounts);if(profile===a)profile=live();render()}));return row}));
 for(const id of ['accounts','lookup','prefs'])$(id).hidden=tab!==id;
-$('wallet').querySelector('.grid').hidden=tab!=='home'||profile!==live();$('observed').hidden=tab!=='home'||profile===live();
-document.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.tab===tab)));
+const titles={home:'Přehled účtu',send:'Odeslat KYRL',stake:'Staking',accounts:'Adresář peněženek',lookup:'Transakce',prefs:'Nastavení'};
+$('pageTitle').textContent=titles[tab];
+$('wallet').querySelector('.grid').hidden=!['home','send','stake'].includes(tab)||profile!==live();
+document.querySelectorAll('[data-view]').forEach(panel=>panel.hidden=panel.dataset.view!==tab);$('observed').hidden=tab!=='home'||profile===live();
+document.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.tab===tab||(b.dataset.tab==="home"&&["send","stake"].includes(tab)))));
 if(!$('observed').hidden)watch();}
 async function watch(){const token=++generation,a=profile;$('watchAddress').textContent=a;$('watchBalance').textContent='Načítání…';try{const r=await fetch('/rest/cosmos/bank/v1beta1/balances/'+a+'/by_denom?denom=ukyrl',{signal:AbortSignal.timeout(8000)});if(!r.ok)throw Error();const n=BigInt((await r.json()).balance.amount);if(token===generation&&a===profile)$('watchBalance').textContent=(n/1000000n).toLocaleString('cs')+','+(n%1000000n).toString().padStart(6,'0')+' KYRL'}catch{if(token===generation)$('watchBalance').textContent='Zůstatek nedostupný'}}
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;say('');render()});
@@ -60,7 +63,14 @@ function applyTheme(){
 systemLight.addEventListener('change',applyTheme);
 themeControl.onchange = () => {applyTheme(); save('theme',themeControl.value)};
 applyTheme();
-$('gotoSend').onclick = () => $('recipient').focus();
+function openTask(page, focusId){
+  tab=page;
+  render();
+  $(focusId).focus();
+}
+$('gotoSend').onclick=()=>openTask('send','recipient');
+$('gotoStake').onclick=()=>openTask('stake','validators');
+document.querySelectorAll('[data-back]').forEach(b=>b.onclick=()=>openTask('home',b.closest('[data-view]').dataset.view==='send'?'gotoSend':'gotoStake'));
 $('receive').onclick = () => {
   $('receiveAddress').textContent = live();
   $('copyResult').textContent = '';
@@ -73,4 +83,3 @@ $('receiveCopy').onclick = async () => {
 
 function updateQr(){const amount=$('requestedAmount').value.trim().replace(',','.');const img=$('paymentQR');img.hidden=true;if(amount&&(!/^\d{1,8}(\.\d{1,6})?$/.test(amount)||Number(amount)===0)){ $('copyResult').textContent='Zadej kladnou částku s nejvýše šesti desetinnými místy.';return} $('copyResult').textContent='';img.onload=()=>img.hidden=false;img.onerror=()=>$('copyResult').textContent='QR není dostupný. Zkopíruj adresu.';img.src='/api/payment-qr?'+new URLSearchParams({address:live(),amount})}
 $('requestedAmount').oninput=updateQr;$('receive').addEventListener('click',updateQr);
-$('qrDesktop').onclick=()=>{if(profile!==live()){say('Pro platební QR zvol připojenou peněženku.');return}$('receive').click()};
